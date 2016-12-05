@@ -33,10 +33,7 @@ object Task {
       case obj:JsObject => {
         (obj \ TaskFields.TaskType).as[String] match {
           case TaskType.GroupingTask => GroupingTask.groupingTasksReader.reads(obj)
-          case TaskType.SimpleTask =>
-            println("in simple read")
-            println(obj)
-            SimpleTask.simpleTasksReader.reads(obj)
+          case TaskType.SimpleTask => SimpleTask.simpleTasksReader.reads(obj)
         }
       }
       case err => JsError(err.toString())
@@ -47,7 +44,7 @@ object Task {
 
 case class GroupingTask(
                          _id: Option[String] = generateBSONId,
-                        /*owner: User,*/
+                          owner: User,
                          title: String,
                          description: String,
                          tasks: Set[Task],
@@ -58,7 +55,7 @@ case class GroupingTask(
 
 case class SimpleTask(
                        _id: Option[String] = generateBSONId,
-                       /*owner: User,*/
+                       owner: User,
                        title: String,
                        description: String,
                        time: Long,
@@ -75,12 +72,12 @@ object GroupingTask {
     override def reads(json: JsValue): JsResult[GroupingTask] = json match {
       case obj: JsObject =>
         val id = (obj \ Id).asOpt[String]
-        //val owner = (obj \ Owner).as[User]
+        val owner = (obj \ Owner).as[User]
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val tasks = (obj \ Tasks).as[Set[Task]]
         //val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(GroupingTask(title = title, description = description, tasks = tasks))
+        JsSuccess(GroupingTask(owner = owner,title = title, description = description, tasks = tasks))
       case _ => JsError("grouping task reader error")
     }
   }
@@ -88,7 +85,7 @@ object GroupingTask {
   implicit val groupingTaskWriter: OWrites[GroupingTask] = new OWrites[GroupingTask] {
     override def writes(o: GroupingTask): JsObject = Json.obj(
       Id -> o._id,
-      //Owner -> o.owner,
+      Owner -> o.owner,
       Title -> o.title,
       Description -> o.description,
       Tasks -> o.tasks.map( t => Task.taskWriter.writes(t))
@@ -106,12 +103,12 @@ object SimpleTask {
     override def reads(json: JsValue): JsResult[SimpleTask] = json match {
       case obj: JsObject =>
         val id = (obj \ Id).asOpt[String]
-        //val owner = (obj \ Owner).as[User]
+        val owner = (obj \ Owner).as[User]
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val time = (obj \ Time).as[Long]
         //val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(SimpleTask(title = title, description = description,time = time))
+        JsSuccess(SimpleTask(owner = owner, title = title, description = description,time = time))
       case _ => JsError("grouping task reader error")
     }
   }
@@ -129,7 +126,7 @@ object SimpleTask {
 
   val simpleTaskMapping = mapping(
     Id -> optional(text),
-   // Owner -> User.userMapping,
+    Owner -> User.userMapping,
     Title -> nonEmptyText,
     Description -> nonEmptyText(6),
     Time -> longNumber,

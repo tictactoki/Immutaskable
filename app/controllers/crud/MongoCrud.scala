@@ -5,50 +5,34 @@ import controllers.CommonController
 import models.{GroupingTask, Task, User}
 import models.commons.CollectionsFields._
 import play.api.libs.json.Json
+import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json.collection.JSONCollection
 import models.commons.{MongoCollectionNames => CN}
 
 import scala.concurrent.{ExecutionContext, Future}
 import play.modules.reactivemongo.json._
-/**
-  * Created by wong on 03/12/2016.
-  */
-trait MongoCrud {
 
-  type Type
 
-  private def getCollectionName = {
-    this match {
-      case t:Task => CN.Tasks
-      case g:GroupingTask => CN.Tasks
-      case u:User => CN.Users
-      case _ => throw new Exception("errors")
-    }
+trait IMongoCrud[T] {
+
+  implicit val mainCollection: Future[JSONCollection]
+
+  protected def findById(id: String): Future[Option[T]]
+
+  protected def delete(field: String, value: String)(implicit executionContext: ExecutionContext) = {
+    mainCollection.flatMap(_.remove(Json.obj(field -> value)))
   }
 
-  protected val idQuery = (id: String) => Json.obj(Id -> id)
+  protected def insert(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult]
 
-  implicit lazy val mainCollection: Future[JSONCollection] = getJSONCollection(getCollectionName)
+  protected def update(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult]
 
-  protected def getJSONCollection(name: String): Future[JSONCollection]
+}
 
-  protected def findById[T](id: String)(implicit exec: ExecutionContext) = {
-    for {
-      collection <- mainCollection
-      list <- collection.find(idQuery(id)).cursor[T]().collect[List]()
-    } yield {
-      list.headOption
-    }
-  }
+trait MongoCrud { self: CommonController =>
 
-  protected def findByField[T](field: String, value: String)(implicit collection: Future[JSONCollection]) = {
-    val query = Json.obj(field -> value)
-    for{
-      collection <- mainCollection
-      list <- collection.find(query).cursor[T]().collect[List]()
-    } yield {
-      list
-    }
-  }
+  protected val fieldQuery = (field: String, value: String) => Json.obj(field -> value)
+
+  protected def getJSONCollection(name: String)(implicit executionContext: ExecutionContext) = reactiveMongoApi.database.map {_.collection[JSONCollection](name)}
 
 }

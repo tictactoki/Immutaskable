@@ -2,9 +2,10 @@ package controllers
 
 import javax.inject.Inject
 
+import controllers.crud.MongoCrud
 import play.api.Configuration
 import play.api.libs.json.Json
-import play.api.mvc.Controller
+import play.api.mvc.{AnyContent, Action, Result, Controller}
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.play.json.collection.JSONCollection
 import models.commons.CollectionsFields._
@@ -19,11 +20,10 @@ abstract class CommonController @Inject()(
                                   implicit val configuration: Configuration,
                                   implicit val webJarAssets: WebJarAssets
                                 )(implicit executionContext: ExecutionContext)
-  extends Controller with MongoController with ReactiveMongoComponents {
+  extends Controller with MongoController with ReactiveMongoComponents with MongoCrud {
 
 
-  protected def getJSONCollection(name: String)= reactiveMongoApi.database.map {_.collection[JSONCollection](name)}
-
+  def getAll: Action[AnyContent]
 
 
 }
