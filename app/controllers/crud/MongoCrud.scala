@@ -13,7 +13,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.modules.reactivemongo.json._
 
 
-trait IMongoCrud[T] {
+trait IMongoCrud {
+
+  type T
 
   implicit val mainCollection: Future[JSONCollection]
 

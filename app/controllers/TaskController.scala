@@ -13,7 +13,7 @@ import reactivemongo.play.json.collection.JSONCollection
 import play.modules.reactivemongo.json._
 import utils.Errors
 import models.commons.CollectionsFields._
-
+import models.commons.{MongoCollectionNames => CN}
 import scala.concurrent.{Future, ExecutionContext}
 
 /**
@@ -24,10 +24,13 @@ class TaskController @Inject() (
                                  override implicit val configuration: Configuration,
                                  override implicit val webJarAssets: WebJarAssets)
                                (implicit executionContext: ExecutionContext)
-extends CommonController(reactiveMongoApi,configuration,webJarAssets) with IMongoCrud[Task]
+extends CommonController(reactiveMongoApi,configuration,webJarAssets) with IMongoCrud
 {
 
-  override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(Tasks)
+  type T = Task
+
+  override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(CN.Tasks)
+  lazy val taskManagerCollection: Future[JSONCollection] = getJSONCollection(CN.TaskManagers)
 
   override protected def update(obj: Task)(implicit executionContext: ExecutionContext): Future[WriteResult] = ???
 

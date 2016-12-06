@@ -7,5 +7,6 @@ object MongoCollectionNames {
 
   final val Users = "users"
   final val Tasks = "tasks"
+  final val TaskManagers = "task_managers"
 
 }

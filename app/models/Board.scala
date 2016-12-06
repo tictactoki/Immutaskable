@@ -5,19 +5,20 @@ import java.util.Date
 import helpers.Generator._
 import play.api.libs.json.Json
 
-sealed trait CompositeBoard
 
-
-
-case class TaskHandler(
+case class TaskManager(
                       _id: Option[String] = generateBSONId,
                       task: Task,
                       pushDate: Date,
                       gapTime: Long
                     )
 
-object TaskHandler {
+object TaskManager {
+  implicit val taskManagerFormat = Json.format[TaskManager]
+}
 
-  implicit val taskHandlerFormat = Json.format[TaskHandler]
+case class UserManager(user: User, taskManagers: Set[TaskManager] = Set.empty)
 
+object UserManager {
+  implicit val userManagerFormat = Json.format[UserManager]
 }
