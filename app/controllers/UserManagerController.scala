@@ -1,5 +1,7 @@
 package controllers
 
+import akka.actor.ActorSystem
+import akka.stream.Materializer
 import com.google.inject.Inject
 import controllers.crud.IMongoCrud
 import models.UserManager
@@ -19,9 +21,11 @@ import play.modules.reactivemongo.json._
 class UserManagerController @Inject() (
                                         override val reactiveMongoApi: ReactiveMongoApi,
                                         override implicit val configuration: Configuration,
-                                        override implicit val webJarAssets: WebJarAssets)
+                                        override implicit val webJarAssets: WebJarAssets,
+                                        override implicit val system: ActorSystem,
+                                        override implicit val materializer: Materializer)
                                       (implicit executionContext: ExecutionContext)
-  extends CommonController(reactiveMongoApi,configuration,webJarAssets) with IMongoCrud {
+  extends CommonController(reactiveMongoApi,configuration,webJarAssets,system,materializer) with IMongoCrud {
 
   override type T = UserManager
   override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(UserManagers)

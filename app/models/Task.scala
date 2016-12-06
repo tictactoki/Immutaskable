@@ -76,8 +76,8 @@ object GroupingTask {
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val tasks = (obj \ Tasks).as[Set[Task]]
-        //val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(GroupingTask(owner = owner,title = title, description = description, tasks = tasks))
+        val taskType = (obj \ TaskFields.TaskType).asOpt[String]
+        JsSuccess(GroupingTask(owner = owner,title = title, description = description,taskType = taskType, tasks = tasks))
       case _ => JsError("grouping task reader error")
     }
   }
@@ -88,7 +88,8 @@ object GroupingTask {
       Owner -> o.owner,
       Title -> o.title,
       Description -> o.description,
-      Tasks -> o.tasks.map( t => Task.taskWriter.writes(t))
+      Tasks -> o.tasks.map( t => Task.taskWriter.writes(t)),
+      TaskFields.TaskType -> o.taskType
     )
   }
 
@@ -107,8 +108,8 @@ object SimpleTask {
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val time = (obj \ Time).as[Long]
-        //val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(SimpleTask(owner = owner, title = title, description = description,time = time))
+        val taskType = (obj \ TaskFields.TaskType).asOpt[String]
+        JsSuccess(SimpleTask(owner = owner, title = title, taskType = taskType,description = description,time = time))
       case _ => JsError("grouping task reader error")
     }
   }
@@ -116,7 +117,7 @@ object SimpleTask {
   implicit val simpleTaskWriter: OWrites[SimpleTask] = new OWrites[SimpleTask] {
     override def writes(o: SimpleTask): JsObject = Json.obj(
       Id -> o._id,
-      //Owner -> o.owner,
+      Owner -> o.owner,
       Title -> o.title,
       Description -> o.description,
       Time -> o.time,

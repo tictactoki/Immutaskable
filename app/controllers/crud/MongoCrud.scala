@@ -5,6 +5,7 @@ import controllers.CommonController
 import models.{GroupingTask, Task, User}
 import models.commons.CollectionsFields._
 import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent}
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json.collection.JSONCollection
 import models.commons.{MongoCollectionNames => CN}
@@ -28,6 +29,8 @@ trait IMongoCrud {
   protected def insert(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult]
 
   protected def update(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult]
+
+  def getAll: Action[AnyContent]
 
 }
 
