@@ -3,47 +3,45 @@ package controllers
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
-import controllers.crud.IMongoCrud
 import models.UserManager
-import play.api.Configuration
-import play.api.mvc.{AnyContent, Action}
-import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.play.json.collection.JSONCollection
 import models.commons.MongoCollectionNames._
-import scala.concurrent.{Future, ExecutionContext}
-import models.commons.CollectionsFields._
-import play.modules.reactivemongo.json._
+import play.api.Configuration
+import play.api.libs.json.{OWrites, Reads}
+import play.modules.reactivemongo.ReactiveMongoApi
+import reactivemongo.play.json.collection.JSONCollection
+
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by stephane on 06/12/2016.
   */
-class UserManagerController @Inject() (
-                                        override val reactiveMongoApi: ReactiveMongoApi,
-                                        override implicit val configuration: Configuration,
-                                        override implicit val webJarAssets: WebJarAssets,
-                                        override implicit val system: ActorSystem,
-                                        override implicit val materializer: Materializer)
-                                      (implicit executionContext: ExecutionContext)
-  extends CommonController(reactiveMongoApi,configuration,webJarAssets,system,materializer) with IMongoCrud {
+class UserManagerController @Inject() (override val reactiveMongoApi: ReactiveMongoApi)
+                                      (implicit executionContext: ExecutionContext,
+                                       configuration: Configuration,
+                                       webJarAssets: WebJarAssets,
+                                       system: ActorSystem,
+                                       materializer: Materializer)
+  extends CommonController(reactiveMongoApi) {
 
-  override type T = UserManager
+  override type P = UserManager
   override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(UserManagers)
+  override implicit val mainReader: Reads[UserManager] = UserManager.userManagerReader
+  override implicit val mainWriter: OWrites[UserManager] = UserManager.userManagerWrites
 
-  override protected def update(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult] = ???
+  //override protected def update(obj: P)(implicit executionContext: ExecutionContext): Future[WriteResult] = ???
 
-  override protected def insert(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
+  /*override protected def insert(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
     mainCollection.flatMap(_.insert(obj))
-  }
+  }*/
 
-  override protected def findById(id: String): Future[Option[T]] = {
+  /*override protected def findById(id: String): Future[Option[P]] = {
     for {
       collection <- mainCollection
-      list <- collection.find(fieldQuery(Id,id)).cursor[T]().collect[List]()
+      list <- collection.find(fieldQuery(Id,id)).cursor[P]().collect[List]()
     } yield {
       list.headOption
     }
-  }
+  }*/
 
-  override def getAll: Action[AnyContent] = ???
+ // override def getAll: Action[AnyContent] = ???
 }

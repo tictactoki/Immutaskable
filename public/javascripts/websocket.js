@@ -69,10 +69,16 @@ var gt = {
     tasks: [st,stt]
 }
 
+var tm = {
+    id: "10",
+    task: st,
+    pushDate: "2016-12-07",
+    gapTime: 50
+}
 
 function sendMsg() {
     var message = document.getElementById("message").value;
-    websocketActor.send(JSON.stringify(gt));
+    websocketActor.send(JSON.stringify(tm));
 }
 
 window.onunload = function(event) {

@@ -1,6 +1,7 @@
 package models
 
 import models.commons.{TaskFields, TaskType}
+import models.persistences.Persistence
 import play.api.libs.json._
 import models.commons.CollectionsFields._
 import helpers.Generator._
@@ -11,9 +12,8 @@ import play.api.data.Forms._
   * Created by stephane on 01/12/2016.
   */
 
-sealed trait Task {
+sealed trait Task extends Persistence {
   val taskType: Option[String]
-
   def getTime: Long
 
 }
@@ -43,8 +43,7 @@ object Task {
 }
 
 case class GroupingTask(
-                         _id: Option[String] = generateBSONId,
-                          owner: User,
+                         owner: User,
                          title: String,
                          description: String,
                          tasks: Set[Task],
@@ -54,7 +53,6 @@ case class GroupingTask(
 }
 
 case class SimpleTask(
-                       _id: Option[String] = generateBSONId,
                        owner: User,
                        title: String,
                        description: String,
@@ -110,7 +108,7 @@ object SimpleTask {
         val time = (obj \ Time).as[Long]
         val taskType = (obj \ TaskFields.TaskType).asOpt[String]
         JsSuccess(SimpleTask(owner = owner, title = title, taskType = taskType,description = description,time = time))
-      case _ => JsError("grouping task reader error")
+      case _ => JsError("simple task reader error")
     }
   }
 
@@ -126,7 +124,6 @@ object SimpleTask {
   }
 
   val simpleTaskMapping = mapping(
-    Id -> optional(text),
     Owner -> User.userMapping,
     Title -> nonEmptyText,
     Description -> nonEmptyText(6),

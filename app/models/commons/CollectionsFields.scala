@@ -16,6 +16,14 @@ object CollectionsFields {
   final val Title = "title"
   final val Time = "time"
   final val Tasks = "tasks"
+  final val DataType = "data_type"
 
 
+}
+
+object DataTypes {
+  final val Task = "task"
+  final val User = "user"
+  final val TaskManager = "taskManager"
+  final val UserManager = "userManager"
 }
