@@ -18,14 +18,32 @@ object WebSocketActor {
   def props(system: ActorRef, out: ActorRef, id: String) = Props(new WebSocketActor(system, out, id))
 }
 
-object MongoDB {
+case class BroadCast(id: String, value: JsValue)
 
-  val dbs = collection.mutable.HashMap[String, Future[JSONCollection]]()
+case class AddMe(id: String)
+
+case class DelMe(id: String)
+
+case class OActor(id: String, actorRef: ActorRef)
+
+class ActorManager extends Actor {
+  val actors = collection.mutable.HashMap[String, ActorRef]()
+
+  override def receive = {
+    case BroadCast(id, jsValue) => broadcast(id, jsValue)
+    case AddMe(id) => actors.put(id, sender)
+    case DelMe(id) => actors.remove(id)
+  }
+
+  private def broadcast(id: String, jsValue: JsValue) = {
+    actors.filterNot(_._1 == id).foreach(f => f._2 ! BroadCast(id, jsValue))
+  }
 
 }
 
+
 class WebSocketActor(val manager: ActorRef, val out: ActorRef, val id: String) extends Actor {
-  
+
 
   private def parse(jsValue: JsValue) = {
     Try(jsValue.validate[Persistence]).map { p =>

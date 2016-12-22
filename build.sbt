@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "3.1.1",
   "org.webjars" % "jquery-ui" % "1.12.1",
   "org.webjars" % "react-grid-layout" % "0.9.2",
-  "org.webjars" % "jqgrid" % "4.7.0"
+  "org.webjars" % "jqgrid" % "4.7.0",
+  "org.webjars" % "bootstrap" % "4.0.0-alpha.5"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

@@ -1,9 +1,9 @@
 package controllers
 
-import actors.MongoDB
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
+import helpers.MongoDB
 import models.UserManager
 import models.commons.MongoCollectionNames._
 import play.api.Configuration
