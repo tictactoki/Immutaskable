@@ -1,17 +1,14 @@
 package controllers
 
-import actors.{WebSocketActor, JsonObject, ActorManager}
-import akka.actor.{Props, ActorSystem}
+import actors.{ActorManager, WebSocketActor}
+import akka.actor.{ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.Inject
-import models.commons.CollectionsFields._
-import models.persistences.Persistence
 import play.api.Configuration
 import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
-import play.api.mvc.{Action, WebSocket, Controller}
-import play.api.mvc.WebSocket.MessageFlowTransformer
-import play.modules.reactivemongo.{ReactiveMongoComponents, MongoController, ReactiveMongoApi}
+import play.api.mvc.{Action, Controller, WebSocket}
+import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
 
 import scala.concurrent.ExecutionContext
 
@@ -27,7 +24,6 @@ class WebSocketController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
   extends Controller with MongoController with ReactiveMongoComponents  {
 
   lazy final val actorManager = system.actorOf(Props[ActorManager],"actor-manager")
-  //implicit val messageFlowTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[Persistence,Persistence]
 
   def socket = WebSocket.accept[JsValue,JsValue] { request =>
     //request.session.get(Id).map { id =>

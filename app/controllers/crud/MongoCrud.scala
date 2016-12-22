@@ -2,16 +2,16 @@ package controllers.crud
 
 
 import controllers.CommonController
-import models.persistences.Persistence
 import models.commons.CollectionsFields._
-import play.api.libs.json.{OWrites, Reads, Json}
-import play.api.mvc.{Action, AnyContent}
+import models.commons.{MongoCollectionNames => CN}
+import models.persistences.Persistence
+import play.api.libs.json.{Json, OWrites, Reads}
+import play.api.mvc.Action
+import play.modules.reactivemongo.json._
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json.collection.JSONCollection
-import models.commons.{MongoCollectionNames => CN}
 
 import scala.concurrent.{ExecutionContext, Future}
-import play.modules.reactivemongo.json._
 
 
 trait MongoCrud { self: CommonController =>
@@ -45,7 +45,7 @@ trait MongoCrud { self: CommonController =>
   }
 
   protected def update(obj: P)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    mainCollection.flatMap(_.update(fieldQuery(Id,obj._id.getOrElse(throw new Exception("invalid id"))),obj))
+    mainCollection.flatMap(_.update(fieldQuery(Id,obj.id.getOrElse(throw new Exception("invalid id"))),obj))
   }
 
   def getAll(implicit executionContext: ExecutionContext) = Action.async { implicit request =>

@@ -1,5 +1,6 @@
 package controllers
 
+import actors.MongoDB
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
@@ -28,42 +29,16 @@ class TaskController @Inject() (override val reactiveMongoApi: ReactiveMongoApi)
 extends CommonController(reactiveMongoApi)
 {
 
+
   override type P = Task
 
   override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(CN.Tasks)
+  MongoDB.dbs.put(CN.Tasks,mainCollection)
 
   override implicit val mainReader: Reads[Task] = Task.taskReader
   override implicit val mainWriter: OWrites[Task] = Task.taskWriter
   lazy val taskManagerCollection: Future[JSONCollection] = getJSONCollection(CN.TaskManagers)
 
-  /*override protected def update(obj: Task)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    for {
-      collection <- mainCollection
-      test <- collection.update(fieldQuery(Id,obj._id.get),obj)
-    } yield {
-      test
-    }
-  }
 
-  override protected def findById(id: String): Future[Option[Task]] = {
-    for {
-      collection <- mainCollection
-      list <- collection.find(fieldQuery(Id,id)).cursor[Task]().collect[List]()
-    } yield {
-      list.headOption
-    }
-  }
 
-  override protected def insert(obj: Task)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    mainCollection.flatMap(_.insert(obj))
-  }
-
-  override def getAll: Action[AnyContent] = Action.async { implicit request =>
-    for {
-      collection <- mainCollection
-      list <- collection.find(Json.obj()).cursor[Task]().collect[List]()
-    } yield {
-      Ok(Json.toJson(list))
-    }
-  }*/
 }

@@ -22,8 +22,10 @@ object CollectionsFields {
 }
 
 object DataTypes {
+  final val SimpleTask = "simple_task"
+  final val GroupingTask = "grouping_task"
   final val Task = "task"
   final val User = "user"
-  final val TaskManager = "taskManager"
-  final val UserManager = "userManager"
+  final val TaskManager = "task_manager"
+  final val UserManager = "user_manager"
 }

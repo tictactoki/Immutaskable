@@ -41,7 +41,7 @@ function connectToWSA() {
 }
 
 var user = {
-    id: "11111111",
+    _id: "11111111",
     name: "wong",
     firstName: "Stephane",
     email: "a@a.com",
@@ -50,27 +50,28 @@ var user = {
 };
 
 var st = {
-    id: "90485406540",
+    _id: "90485406540",
     owner: user,
     title: "title",
     description: "description",
     time: 0,
-    task_type: "simple_task"
+    data_type: "simple_task"
 
 };
 
 var stt = st;
 var gt = {
-    id: "64654",
+    _id: "64654",
     owner: user,
     title: "gp",
     description: "desc",
-    task_type: "grouping_task",
+    data_type: "grouping_task",
     tasks: [st,stt]
 }
 
 var tm = {
-    id: "10",
+    data_type: "task_manager",
+    _id: "10",
     task: st,
     pushDate: "2016-12-07",
     gapTime: 50
@@ -78,7 +79,7 @@ var tm = {
 
 function sendMsg() {
     var message = document.getElementById("message").value;
-    websocketActor.send(JSON.stringify(tm));
+    websocketActor.send(JSON.stringify(gt));
 }
 
 window.onunload = function(event) {

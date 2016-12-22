@@ -7,15 +7,15 @@ import models.commons.CollectionsFields._
 import helpers.Generator._
 import play.api.data._
 import play.api.data.Forms._
+import models.commons.{ DataTypes => DT }
 
 /**
   * Created by stephane on 01/12/2016.
   */
 
 sealed trait Task extends Persistence {
-  val taskType: Option[String]
   def getTime: Long
-
+  override protected val dataType = Option(DT.Task)
 }
 
 object Task {
@@ -31,7 +31,7 @@ object Task {
   implicit val taskReader: Reads[Task] = new Reads[Task] {
     override def reads(json: JsValue): JsResult[Task] = json match {
       case obj:JsObject => {
-        (obj \ TaskFields.TaskType).as[String] match {
+        (obj \ DataType).as[String] match {
           case TaskType.GroupingTask => GroupingTask.groupingTasksReader.reads(obj)
           case TaskType.SimpleTask => SimpleTask.simpleTasksReader.reads(obj)
         }
@@ -43,21 +43,23 @@ object Task {
 }
 
 case class GroupingTask(
+                         override val id: Option[String] = generateBSONId,
                          owner: User,
                          title: String,
                          description: String,
                          tasks: Set[Task],
-                         override val taskType: Option[String] = Option(TaskType.GroupingTask)) extends Task {
+                         override val dataType: Option[String] = Option(TaskType.GroupingTask)) extends Task {
 
   override def getTime: Long = tasks.foldLeft(0L){(acc, task) => task.getTime + acc}
 }
 
 case class SimpleTask(
+                       override val id: Option[String] = generateBSONId,
                        owner: User,
                        title: String,
                        description: String,
                        time: Long,
-                       override val taskType: Option[String] = Option(TaskType.SimpleTask)) extends Task {
+                       override val dataType: Option[String] = Option(TaskType.SimpleTask)) extends Task {
 
   override def getTime: Long = time
 }
@@ -74,20 +76,29 @@ object GroupingTask {
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val tasks = (obj \ Tasks).as[Set[Task]]
-        val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(GroupingTask(owner = owner,title = title, description = description,taskType = taskType, tasks = tasks))
+        val taskType = (obj \ DataType).asOpt[String]
+        JsSuccess(
+          GroupingTask(
+            id = id,
+            owner = owner,
+            title = title,
+            description = description,
+            dataType = taskType,
+            tasks = tasks
+          )
+        )
       case _ => JsError("grouping task reader error")
     }
   }
 
   implicit val groupingTaskWriter: OWrites[GroupingTask] = new OWrites[GroupingTask] {
     override def writes(o: GroupingTask): JsObject = Json.obj(
-      Id -> o._id,
+      Id -> o.id,
       Owner -> o.owner,
       Title -> o.title,
       Description -> o.description,
       Tasks -> o.tasks.map( t => Task.taskWriter.writes(t)),
-      TaskFields.TaskType -> o.taskType
+      DataType -> o.dataType
     )
   }
 
@@ -107,28 +118,37 @@ object SimpleTask {
         val description = (obj \ Description).as[String]
         val time = (obj \ Time).as[Long]
         val taskType = (obj \ TaskFields.TaskType).asOpt[String]
-        JsSuccess(SimpleTask(owner = owner, title = title, taskType = taskType,description = description,time = time))
+        JsSuccess(
+          SimpleTask(
+            id = id,
+            owner = owner,
+            title = title,
+            description = description,
+            time = time
+          )
+        )
       case _ => JsError("simple task reader error")
     }
   }
 
   implicit val simpleTaskWriter: OWrites[SimpleTask] = new OWrites[SimpleTask] {
     override def writes(o: SimpleTask): JsObject = Json.obj(
-      Id -> o._id,
+      Id -> o.id,
       Owner -> o.owner,
       Title -> o.title,
       Description -> o.description,
       Time -> o.time,
-      TaskFields.TaskType -> o.taskType
+      DataType -> o.dataType
     )
   }
 
   val simpleTaskMapping = mapping(
+    Id -> optional(text),
     Owner -> User.userMapping,
     Title -> nonEmptyText,
     Description -> nonEmptyText(6),
     Time -> longNumber,
-    TaskFields.TaskType -> optional(text)
+    DataType -> optional(text)
   )(SimpleTask.apply)(SimpleTask.unapply)
 
 

@@ -1,5 +1,6 @@
 package controllers
 
+import actors.MongoDB
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
@@ -25,23 +26,8 @@ class UserManagerController @Inject() (override val reactiveMongoApi: ReactiveMo
 
   override type P = UserManager
   override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(UserManagers)
+  MongoDB.dbs.put(UserManagers,mainCollection)
   override implicit val mainReader: Reads[UserManager] = UserManager.userManagerReader
   override implicit val mainWriter: OWrites[UserManager] = UserManager.userManagerWrites
 
-  //override protected def update(obj: P)(implicit executionContext: ExecutionContext): Future[WriteResult] = ???
-
-  /*override protected def insert(obj: T)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    mainCollection.flatMap(_.insert(obj))
-  }*/
-
-  /*override protected def findById(id: String): Future[Option[P]] = {
-    for {
-      collection <- mainCollection
-      list <- collection.find(fieldQuery(Id,id)).cursor[P]().collect[List]()
-    } yield {
-      list.headOption
-    }
-  }*/
-
- // override def getAll: Action[AnyContent] = ???
 }

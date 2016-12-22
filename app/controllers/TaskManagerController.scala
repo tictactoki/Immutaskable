@@ -1,5 +1,6 @@
 package controllers
 
+import actors.MongoDB
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
@@ -27,25 +28,9 @@ class TaskManagerController @Inject() (override val reactiveMongoApi: ReactiveMo
 
   override type P = TaskManager
   override implicit val mainCollection: Future[JSONCollection] = getJSONCollection(TaskManagers)
+  MongoDB.dbs.put(TaskManagers,mainCollection)
   override implicit val mainReader: Reads[TaskManager] = TaskManager.taskManagerReader
   override implicit val mainWriter: OWrites[TaskManager] = TaskManager.taskManagerWrites
-
- // override protected def update(obj: TaskManager)(implicit executionContext: ExecutionContext): Future[WriteResult] = ???
-
-  /*override protected def insert(obj: TaskManager)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    mainCollection.flatMap(_.insert(obj))
-  }*/
-
-  /*override protected def findById(id: String): Future[Option[TaskManager]] = {
-    for {
-      collection <- mainCollection
-      list <- collection.find(fieldQuery(Id,id)).cursor[TaskManager]().collect[List]()
-    } yield {
-      list.headOption
-    }
-  }
-
-  override def getAll: Action[AnyContent] = ???*/
 
 }
 
