@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Singleton, Inject}
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
@@ -15,6 +15,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by wong on 03/12/2016.
   */
+@Singleton
 abstract class CommonController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
                                 (implicit executionContext: ExecutionContext,
                                  configuration: Configuration,

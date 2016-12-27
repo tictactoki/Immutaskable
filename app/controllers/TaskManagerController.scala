@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.Singleton
+
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
@@ -16,6 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by stephane on 06/12/2016.
   */
+@Singleton
 class TaskManagerController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
                                      (implicit executionContext: ExecutionContext,
                                       configuration: Configuration,

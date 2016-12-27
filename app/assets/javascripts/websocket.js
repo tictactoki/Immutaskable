@@ -1,4 +1,7 @@
 /**
+ * Created by stephane on 27/12/2016.
+ */
+/**
  * Created by stephane on 06/12/2016.
  */
 var websocketActor;
@@ -6,7 +9,7 @@ var websocketActor;
 function connectToWSA() {
     var endpoint = document.getElementById("endpoint").value;
     if (websocketActor !== undefined) {
-        websocketActor.close()
+        websocketActor.close();
     }
 
     console.log(endpoint);
@@ -24,20 +27,20 @@ function connectToWSA() {
         }
         console.log("onmessage. size: " + length + ", content: " + event.data);
         document.getElementById("test").innerHTML = event.data;
-    }
+    };
 
     websocketActor.onopen = function(event) {
         console.log("websocket open");
-    }
+    };
 
     websocketActor.onclose = function(event) {
         if( websocketActor !== undefined) websocketActor.send(JSON.stringify({msg: "Disconnected"}));
         console.log("websocket close");
-    }
+    };
 
     websocketActor.onerror = function(event) {
         console.log(event);
-    }
+    };
 }
 
 var user = {
@@ -67,7 +70,7 @@ var gt = {
     description: "desc",
     data_type: "grouping_task",
     tasks: [st,stt]
-}
+};
 
 var tm = {
     data_type: "task_manager",
@@ -75,7 +78,7 @@ var tm = {
     task: st,
     pushDate: "2016-12-07",
     gapTime: 50
-}
+};
 
 function sendMsg() {
     var message = document.getElementById("message").value;
@@ -84,9 +87,11 @@ function sendMsg() {
 
 window.onunload = function(event) {
     if(websocketActor !== undefined) websocketActor.send(JSON.stringify({msg: "Disconnected"}));
-}
+};
 
 function closeConn(){
 
     websocketActor.close();
 }
+
+//connectToWSA();

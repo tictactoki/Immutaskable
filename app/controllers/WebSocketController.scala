@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.Singleton
+
 import actors.{ActorManager, WebSocketActor}
 import akka.actor.{ActorSystem, Props}
 import akka.stream.Materializer
@@ -15,6 +17,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by stephane on 21/12/2016.
   */
+@Singleton
 class WebSocketController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
                                     (implicit executionContext: ExecutionContext,
                                      configuration: Configuration,
