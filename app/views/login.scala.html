@@ -1,4 +1,5 @@
-@()(implicit webJarAssets: WebJarAssets)
+@import play.api.libs.json.JsValue
+@(userForm: Option[Form[User]], signInForm: Option[Form[SignIn]])(implicit webJarAssets: WebJarAssets)
 
 @main("Login") {
 
@@ -12,4 +13,6 @@
             <input type="password" class="form-control" id="password" placeholder="Password">
         </div>
     </form>
+
+
 }

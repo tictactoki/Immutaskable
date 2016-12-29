@@ -8,11 +8,11 @@ import play.api.libs.json.Json
 import models.commons.{DataTypes => DT}
 
 case class TaskManager(
-                        override val id: Option[String] = generateBSONId,
                         task: Task,
                         pushDate: Date,
                         gapTime: Long,
-                        override protected val dataType: Option[String] = Option(DT.TaskManager)
+                        override val id: String = generateBSONId,
+                        override protected val dataType: String = DT.TaskManager
                       ) extends Persistence
 
 object TaskManager {
@@ -22,10 +22,10 @@ object TaskManager {
 }
 
 case class UserManager(
-                        override val id: Option[String] = generateBSONId,
                         user: User,
                         taskManagers: Set[TaskManager] = Set.empty,
-                        override protected val dataType: Option[String] = Option(DT.UserManager)
+                        override val id: String = generateBSONId,
+                        override protected val dataType: String = DT.UserManager
                       ) extends Persistence
 
 object UserManager {

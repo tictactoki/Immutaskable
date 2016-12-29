@@ -5,7 +5,7 @@ import controllers.CommonController
 import models.commons.CollectionsFields._
 import models.commons.{MongoCollectionNames => CN}
 import models.persistences.Persistence
-import play.api.libs.json.{Json, OWrites, Reads}
+import play.api.libs.json.{JsObject, Json, OWrites, Reads}
 import play.api.mvc.Action
 import play.modules.reactivemongo.json._
 import reactivemongo.api.commands.WriteResult
@@ -23,7 +23,7 @@ trait MongoCrud { self: CommonController =>
   implicit val mainReader: Reads[P]
   implicit val mainWriter: OWrites[P]
 
-  protected val fieldQuery = (field: String, value: String) => Json.obj(field -> value)
+  implicit protected val fieldQuery = (field: String, value: String) => Json.obj(field -> value)
 
   protected def getJSONCollection(name: String)(implicit executionContext: ExecutionContext) = reactiveMongoApi.database.map {_.collection[JSONCollection](name)}
 
@@ -45,7 +45,7 @@ trait MongoCrud { self: CommonController =>
   }
 
   protected def update(obj: P)(implicit executionContext: ExecutionContext): Future[WriteResult] = {
-    mainCollection.flatMap(_.update(fieldQuery(Id,obj.id.getOrElse(throw new Exception("invalid id"))),obj))
+    mainCollection.flatMap(_.update(fieldQuery(Id,obj.id),obj))
   }
 
   def getAll(implicit executionContext: ExecutionContext) = Action.async { implicit request =>
@@ -57,6 +57,14 @@ trait MongoCrud { self: CommonController =>
     }
   }
 
+  protected def findByField(field: String, value: String)(implicit executionContext: ExecutionContext,f: (String, String) => JsObject) = {
+    for {
+      collection <- mainCollection
+      list <- collection.find(f(field,value)).cursor[P]().collect[List]()
+    } yield {
+      list.headOption
+    }
+  }
 
 
 }

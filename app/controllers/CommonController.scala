@@ -22,4 +22,9 @@ abstract class CommonController @Inject()(val reactiveMongoApi: ReactiveMongoApi
                                  webJarAssets: WebJarAssets,
                                  system: ActorSystem,
                                  materializer: Materializer)
-  extends Controller with MongoController with ReactiveMongoComponents with MongoCrud
+  extends Controller with MongoController with ReactiveMongoComponents with MongoCrud {
+
+  protected val errorLoginAccess = Unauthorized("You can't access without log in")
+
+
+}

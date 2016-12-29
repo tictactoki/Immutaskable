@@ -10,8 +10,8 @@ import models.commons.{ DataTypes => DT }
   * Created by stephane on 20/12/2016.
   */
 trait Persistence {
-  val id: Option[String] = generateBSONId
-  protected val dataType: Option[String]
+  val id: String = generateBSONId
+  protected val dataType: String
 }
 
 object Persistence {

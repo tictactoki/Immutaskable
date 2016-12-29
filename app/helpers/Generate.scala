@@ -7,6 +7,6 @@ import reactivemongo.bson.BSONObjectID
   */
 object Generator {
 
-  def generateBSONId = Option(BSONObjectID.generate().stringify)
+  def generateBSONId = BSONObjectID.generate().stringify
 
 }

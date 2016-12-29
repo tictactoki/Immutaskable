@@ -16,3 +16,6 @@ GET     /websocket                  controllers.WebSocketController.index
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 # Webjar
 GET        /webjars/*file        controllers.WebJarAssets.at(file)
+
+
+GET     /dashboard                  controllers.HomeController.dashBoard

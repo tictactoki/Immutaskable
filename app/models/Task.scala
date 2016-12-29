@@ -15,7 +15,7 @@ import models.commons.{ DataTypes => DT }
 
 sealed trait Task extends Persistence {
   def getTime: Long
-  override protected val dataType = Option(DT.Task)
+  override protected val dataType = DT.Task
 }
 
 object Task {
@@ -43,23 +43,23 @@ object Task {
 }
 
 case class GroupingTask(
-                         override val id: Option[String] = generateBSONId,
                          owner: User,
                          title: String,
                          description: String,
                          tasks: Set[Task],
-                         override val dataType: Option[String] = Option(TaskType.GroupingTask)) extends Task {
+                         override val id: String = generateBSONId,
+                         override val dataType: String = TaskType.GroupingTask) extends Task {
 
   override def getTime: Long = tasks.foldLeft(0L){(acc, task) => task.getTime + acc}
 }
 
 case class SimpleTask(
-                       override val id: Option[String] = generateBSONId,
                        owner: User,
                        title: String,
                        description: String,
                        time: Long,
-                       override val dataType: Option[String] = Option(TaskType.SimpleTask)) extends Task {
+                       override val id: String = generateBSONId,
+                       override val dataType: String = TaskType.SimpleTask) extends Task {
 
   override def getTime: Long = time
 }
@@ -71,12 +71,12 @@ object GroupingTask {
   implicit val groupingTasksReader: Reads[GroupingTask] = new Reads[GroupingTask] {
     override def reads(json: JsValue): JsResult[GroupingTask] = json match {
       case obj: JsObject =>
-        val id = (obj \ Id).asOpt[String]
+        val id = (obj \ Id).as[String]
         val owner = (obj \ Owner).as[User]
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val tasks = (obj \ Tasks).as[Set[Task]]
-        val taskType = (obj \ DataType).asOpt[String]
+        val taskType = (obj \ DataType).as[String]
         JsSuccess(
           GroupingTask(
             id = id,
@@ -112,12 +112,12 @@ object SimpleTask {
   implicit val simpleTasksReader: Reads[SimpleTask] = new Reads[SimpleTask] {
     override def reads(json: JsValue): JsResult[SimpleTask] = json match {
       case obj: JsObject =>
-        val id = (obj \ Id).asOpt[String]
+        val id = (obj \ Id).as[String]
         val owner = (obj \ Owner).as[User]
         val title = (obj \ Title).as[String]
         val description = (obj \ Description).as[String]
         val time = (obj \ Time).as[Long]
-        val taskType = (obj \ TaskFields.TaskType).asOpt[String]
+        val taskType = (obj \ TaskFields.TaskType).as[String]
         JsSuccess(
           SimpleTask(
             id = id,
@@ -143,12 +143,12 @@ object SimpleTask {
   }
 
   val simpleTaskMapping = mapping(
-    Id -> optional(text),
     Owner -> User.userMapping,
     Title -> nonEmptyText,
     Description -> nonEmptyText(6),
     Time -> longNumber,
-    DataType -> optional(text)
+    Id -> text,
+    DataType -> text
   )(SimpleTask.apply)(SimpleTask.unapply)
 
 
