@@ -19,6 +19,8 @@ import models.commons.CollectionsFields._
 import scala.concurrent.{Future, ExecutionContext}
 import models.User._
 
+import scala.util.Try
+
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -51,8 +53,11 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
   protected def checkSignIn(signIn: SignIn) = {
     findByField(Email, signIn.email).map { ou =>
       ou.map { user =>
-        BCrypt.checkpw(signIn.password, user.password)
-      }
+        (BCrypt.checkpw(signIn.password, user.password),user)
+          //Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession(user)))
+        //}
+        //else BadRequest(views.html.login(Option(userForm), Option(SignIn.signInForm),true))
+      }.getOrElse(false,null)
     }
   }
 
@@ -63,7 +68,7 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
     * a path of `/`.
     */
   def index = Action {
-    Ok(views.html.login(Option(userForm), Option(SignIn.signInForm)))
+    Ok(views.html.login(userForm, SignIn.signInForm,true))
   }
 
 
@@ -80,14 +85,21 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
 
   def login = Action.async { implicit request =>
     SignIn.signInForm.bindFromRequest().fold(
-      hasErrors => Future.successful(BadRequest(views.html.login(None, Option(hasErrors)))),
-      data => checkSignIn(data).flatMap( valid => )
+      hasErrors => Future.successful(BadRequest(views.html.login(userForm, hasErrors,true))),
+      data => checkSignIn(data).map { case (valid, user) =>
+        if(valid) {
+          // if valid user doesn't be null
+          Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession(user)))
+        }
+        else BadRequest(views.html.login(userForm, SignIn.signInForm,true))
+      }
+
     )
   }
 
   def signUp = Action.async { implicit request =>
     userForm.bindFromRequest().fold(
-      hasErrors => Future.successful(BadRequest(views.html.login(Option(hasErrors), None))),
+      hasErrors => Future.successful(BadRequest(views.html.login(hasErrors, SignIn.signInForm,false))),
       u => {
         checkEmail(u.email).map { exist =>
           if (exist) {
@@ -97,7 +109,7 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
             println(newUser)
             Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession))
           }
-          else Conflict(views.html.login(Option(userForm), Option(SignIn.signInForm)))
+          else Conflict(views.html.login(userForm, SignIn.signInForm, false))
         }
       }
     )

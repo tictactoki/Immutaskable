@@ -1,9 +1,10 @@
-@import play.api.libs.json.JsValue
-@(userForm: Option[Form[User]], signInForm: Option[Form[SignIn]])(implicit webJarAssets: WebJarAssets)
+@(userForm: Form[User], signInForm: Form[SignIn], inLog: Boolean)(implicit webJarAssets: WebJarAssets)
 
 @main("Login") {
 
-    <form class="form-horizontal">
+
+    @if(inLog) {
+    <form action='@routes.HomeController.login()' class="form-horizontal">
         <div class="input-group col-md-8">
             <span class="input-group-addon">@@</span>
             <input type="email" class="form-control" id="email" placeholder="Email">
@@ -12,7 +13,23 @@
             <span class="input-group-addon glyphicon glyphicon-jpy"></span>
             <input type="password" class="form-control" id="password" placeholder="Password">
         </div>
+        <div class="input-group col-md-2">
+            <span></span>
+            <input type="button" value="Login">
+        </div>
     </form>
+    } else {
+        <form action='@routes.HomeController.signUp()' class="form-horizontal">
+            <div class="input-group col-md-8">
+                <span class="input-group-addon">@@</span>
+                <input type="email" class="form-control" id="email" placeholder="Email">
+            </div>
+            <div class="input-group col-md-8">
+                <span class="input-group-addon glyphicon glyphicon-jpy"></span>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+        </form>
+    }
 
 
 }
