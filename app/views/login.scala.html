@@ -4,18 +4,19 @@
 
 
     @if(inLog) {
-    <form action='@routes.HomeController.login()' class="form-horizontal">
+        <p>@signInForm.data.get("email").getOrElse("test")</p>
+    <form  method="POST" action='@routes.HomeController.login()' class="form-horizontal">
         <div class="input-group col-md-8">
             <span class="input-group-addon">@@</span>
-            <input type="email" class="form-control" id="email" placeholder="Email">
+            <input type="email" class="form-control" id="email" placeholder="Email" value=@signInForm.data.get("email").getOrElse("")>
         </div>
         <div class="input-group col-md-8">
             <span class="input-group-addon glyphicon glyphicon-jpy"></span>
-            <input type="password" class="form-control" id="password" placeholder="Password">
+            <input type="password" class="form-control" id="password" placeholder="Password" value=@signInForm.data.get("password").getOrElse("")>
         </div>
         <div class="input-group col-md-2">
             <span></span>
-            <input type="button" value="Login">
+            <input type="submit" value="Login">
         </div>
     </form>
     } else {

@@ -68,7 +68,7 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
     * a path of `/`.
     */
   def index = Action {
-    Ok(views.html.login(userForm, SignIn.signInForm,true))
+    Ok(views.html.test())
   }
 
 
@@ -85,7 +85,9 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
 
   def login = Action.async { implicit request =>
     SignIn.signInForm.bindFromRequest().fold(
-      hasErrors => Future.successful(BadRequest(views.html.login(userForm, hasErrors,true))),
+      hasErrors => {
+        Future.successful(BadRequest(views.html.login(userForm, hasErrors,true)))
+      },
       data => checkSignIn(data).map { case (valid, user) =>
         if(valid) {
           // if valid user doesn't be null

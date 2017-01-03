@@ -21,19 +21,19 @@
         <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("marked.js"))'></script>
         <script src="@routes.WebJarAssets.at(webJarAssets.fullPath("react", "react.js"))"></script>
         <script src="@routes.WebJarAssets.at(webJarAssets.locate("react-dom.min.js"))"></script>
+        <script src="@routes.Assets.versioned("javascripts/constants.js")"></script>
 
 
     </head>
     <body>
         @* And here's where we render the `Html` object containing
         * the page content. *@
-        <div class="container">
+        <div id="container" class="container">
             @content
         </div>
             <!-- <div id="test"></div> -->
 
         <script src="@routes.WebJarAssets.at(webJarAssets.locate("bootstrap.js"))"></script>
-        <script src="@routes.Assets.versioned("javascripts/test.js")"></script>
         <script src="@routes.Assets.versioned("javascripts/websocket.js")"></script>
 
     </body>
