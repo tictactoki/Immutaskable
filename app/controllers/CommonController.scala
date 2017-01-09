@@ -19,7 +19,6 @@ import scala.concurrent.ExecutionContext
 abstract class CommonController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
                                 (implicit executionContext: ExecutionContext,
                                  configuration: Configuration,
-                                 webJarAssets: WebJarAssets,
                                  system: ActorSystem,
                                  materializer: Materializer)
   extends Controller with MongoController with ReactiveMongoComponents with MongoCrud {

@@ -21,7 +21,6 @@ import scala.concurrent.ExecutionContext
 class WebSocketController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
                                     (implicit executionContext: ExecutionContext,
                                      configuration: Configuration,
-                                     webJarAssets: WebJarAssets,
                                      system: ActorSystem,
                                      materializer: Materializer)
   extends Controller with MongoController with ReactiveMongoComponents  {

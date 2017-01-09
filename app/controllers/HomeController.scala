@@ -30,7 +30,6 @@ import scala.util.Try
 class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
                               (implicit executionContext: ExecutionContext,
                                configuration: Configuration,
-                               webJarAssets: WebJarAssets,
                                system: ActorSystem,
                                materializer: Materializer)
   extends CommonController(reactiveMongoApi) {

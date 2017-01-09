@@ -22,7 +22,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class TaskController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
                               (implicit executionContext: ExecutionContext,
                                configuration: Configuration,
-                               webJarAssets: WebJarAssets,
                                system: ActorSystem,
                                materializer: Materializer)
   extends CommonController(reactiveMongoApi) {

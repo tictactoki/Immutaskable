@@ -2,6 +2,7 @@
  * Created by stephane on 28/12/2016.
  */
 
+
 var Login = RC({
 
     getInitialeState: function() {
@@ -37,6 +38,7 @@ var Login = RC({
         }).done(function (result) {
             console.log("success");
             console.log(result);
+
         }).fail(function (result) {
             console.log("fail");
             console.log(result);
