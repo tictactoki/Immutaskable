@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, Redirect } from 'react-router';
-
+import { Router, Route, Redirect, browserHistory } from 'react-router';
+import $ from "jquery"
+import Login from './login-signup.jsx'
 
 class Test extends React.Component {
 
@@ -10,16 +11,22 @@ class Test extends React.Component {
     render() {
         return (<h1>Hello, {this.props.name}</h1>);
     }
+
+    handleForm(event) {
+
+    }
+
 }
 
 Test.defaultProps = {
     name: "Stéphane"
 };
 
+
+
 var routes =
-    <Router>
-        <Route path="/" component={Test}>
-        </Route>
+    <Route> history={browserHistory}>
+        <Route path="/" component={Login}></Route>
     </Router>;
 
 

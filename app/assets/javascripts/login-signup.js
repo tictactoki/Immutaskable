@@ -3,7 +3,7 @@
  */
 
 
-var Login = RC({
+var Logi = RC({
 
     getInitialeState: function() {
         return {
