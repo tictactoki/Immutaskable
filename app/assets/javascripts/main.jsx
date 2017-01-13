@@ -25,7 +25,7 @@ Test.defaultProps = {
 
 
 var routes =
-    <Route> history={browserHistory}>
+    <Router history={browserHistory}>
         <Route path="/" component={Login}></Route>
     </Router>;
 

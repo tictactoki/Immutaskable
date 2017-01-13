@@ -82,17 +82,22 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
     }.getOrElse(Redirect(routes.HomeController.index()))
   }
 
-  def login = Action.async { implicit request =>
+  def login = Action.async{ implicit request =>
     SignIn.signInForm.bindFromRequest().fold(
       hasErrors => {
         Future.successful(BadRequest(views.html.login(userForm, hasErrors,true)))
       },
-      data => checkSignIn(data).map { case (valid, user) =>
-        if(valid) {
-          // if valid user doesn't be null
-          Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession(user)))
+      data => {
+        checkSignIn(data).map { case (valid, user) =>
+          if (valid) {
+            // if valid user doesn't be null
+            Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession(user)))
+          }
+          else {
+            println(data)
+            Unauthorized(Json.toJson(data))
+          }
         }
-        else BadRequest(views.html.login(userForm, SignIn.signInForm,true))
       }
 
     )

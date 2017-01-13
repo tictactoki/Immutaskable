@@ -18,7 +18,7 @@ class Login extends React.Component {
     }
 
 
-    handleChange(field,event) {
+    handleChange(field, event) {
         var obj = {};
         obj[field] = event.target.value;
         this.setState(obj);
@@ -33,7 +33,8 @@ class Login extends React.Component {
                 </label>
                 <label>
                     Password:
-                    <input type="password" value={this.state.password} onChange={this.handleChange.bind(this,'password')}/>
+                    <input type="password" value={this.state.password}
+                           onChange={this.handleChange.bind(this,'password')}/>
                 </label>
                 <input type="submit" value="Login"/>
             </form>
@@ -41,21 +42,28 @@ class Login extends React.Component {
     }
 
 
-
     authentication(event) {
         event.preventDefault();
         $.ajax({
                 type: "POST",
+                contentType: "application/json",
                 dataType: "json",
                 url: this.state.url,
-                data: {email: this.state.email, password: this.state.password},
-                success: function (t) {
-                    console.log(t);
+                data: JSON.stringify({email: this.state.email, password: this.state.password}),
+                success: function (data, status, xhr) {
+                    console.log(data);
+                    console.log(status);
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
                 }
             }
         )
     }
 
 }
+
 
 export default Login;
