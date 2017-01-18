@@ -5,8 +5,9 @@ import controllers.CommonController
 import models.commons.CollectionsFields._
 import models.commons.{MongoCollectionNames => CN}
 import models.persistences.Persistence
+import play.api.data.Form
 import play.api.libs.json.{JsObject, Json, OWrites, Reads}
-import play.api.mvc.Action
+import play.api.mvc.{Result, Action}
 import play.modules.reactivemongo.json._
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json.collection.JSONCollection
@@ -66,5 +67,9 @@ trait MongoCrud { self: CommonController =>
     }
   }
 
+  protected def getJsonFormError[T](form: Form[T]): Future[Result] = {
+    val jsError = form.errors.foldLeft(Json.obj())((acc, js) => acc ++ Json.obj(js.key -> js.message))
+    Future.successful(BadRequest(jsError))
+  }
 
 }

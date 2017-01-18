@@ -76,16 +76,26 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
 
   }
 
-  def dashBoard = Action { implicit request =>
-    request.session.get(Id).map { Id =>
-      Ok(views.html.dashboard())
-    }.getOrElse(Redirect(routes.HomeController.index()))
+  def logout = Action {
+    Ok(views.html.test()).withNewSession
   }
 
-  def login = Action.async{ implicit request =>
+  def dashBoard = Action  { implicit request =>
+    request.session.get(Id).map { id =>
+      println(id)
+      Ok(views.html.dashboard())
+    }.getOrElse(Ok(views.html.test()))
+  }
+
+
+  def fake = Action { implicit request =>
+    Ok("")
+  }
+
+  def login = Action.async { implicit request =>
     SignIn.signInForm.bindFromRequest().fold(
       hasErrors => {
-        Future.successful(BadRequest(views.html.login(userForm, hasErrors,true)))
+        getJsonFormError(hasErrors)
       },
       data => {
         checkSignIn(data).map { case (valid, user) =>
@@ -94,8 +104,7 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
             Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession(user)))
           }
           else {
-            println(data)
-            Unauthorized(Json.toJson(data))
+            Unauthorized(Json.toJson(data.email))
           }
         }
       }
@@ -105,17 +114,17 @@ class HomeController @Inject()(override val reactiveMongoApi: ReactiveMongoApi)
 
   def signUp = Action.async { implicit request =>
     userForm.bindFromRequest().fold(
-      hasErrors => Future.successful(BadRequest(views.html.login(hasErrors, SignIn.signInForm,false))),
+      hasErrors => getJsonFormError(hasErrors),
       u => {
         checkEmail(u.email).map { exist =>
-          if (exist) {
+          if (!exist) {
             val cryptPassword = BCrypt.hashpw(u.password, salt)
             implicit val newUser = User(u.name, u.firstName, u.email, cryptPassword)
             insert(newUser)
             println(newUser)
             Redirect(routes.HomeController.dashBoard).withSession(Session(createUserDataSession))
           }
-          else Conflict(views.html.login(userForm, SignIn.signInForm, false))
+          else Conflict("Email already exist")
         }
       }
     )

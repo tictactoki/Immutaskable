@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
+  filters,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.scalaz" %% "scalaz-core" % "7.2.2",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
@@ -29,9 +30,11 @@ browserifyOutputDir := target.value / "web" / "browserify"
 browserifyTask := {
   println("Running browserify");
   val outputFile = browserifyOutputDir.value / "main.js"
+  val dashboardFile = browserifyOutputDir.value / "dashboard.js"
   browserifyOutputDir.value.mkdirs
   "./node_modules/.bin/browserify -t [ babelify --presets [ es2015 react ] ] app/assets/javascripts/main.jsx -o "+outputFile.getPath !;
-  List(outputFile)
+  "./node_modules/.bin/browserify -t [ babelify --presets [ es2015 react ] ] app/assets/javascripts/dashboard.jsx -o "+dashboardFile.getPath !;
+  List(outputFile,dashboardFile)
 }
 
 sourceGenerators in Assets <+= browserifyTask
