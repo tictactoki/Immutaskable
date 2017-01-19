@@ -16,8 +16,6 @@ GET     /websocket                  controllers.WebSocketController.index
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 GET     /dashboard                  controllers.HomeController.dashBoard
-GET     /sign/in                    controllers.HomeController.login
-GET     /sign/up                    controllers.HomeController.fake
 GET     /logout                     controllers.HomeController.logout
 POST    /login                      controllers.HomeController.login
 POST    /signUp                     controllers.HomeController.signUp
