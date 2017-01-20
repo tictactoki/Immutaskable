@@ -11,7 +11,7 @@ class Login extends React.Component {
         this.state = {
             email: "",
             password: "",
-            url: "/sign/in"
+            url: "/login"
         };
         this.handleChange = this.handleChange.bind(this);
         this.authentication = this.authentication.bind(this);
@@ -19,7 +19,7 @@ class Login extends React.Component {
 
 
     handleChange(field, event) {
-        var obj = {};
+        let obj = {};
         obj[field] = event.target.value;
         this.setState(obj);
     }
@@ -47,14 +47,13 @@ class Login extends React.Component {
         $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                dataType: "json",
                 url: this.state.url,
                 data: JSON.stringify({email: this.state.email, password: this.state.password}),
                 success: function (data, status, xhr) {
                     console.log("success");
                     console.log(data);
                     console.log(status);
-                    window.location.replace("./dashboard")
+                    window.location.replace("./dashboard");
                 },
                 error: function (xhr, status, error) {
                     console.log("error");

@@ -27,7 +27,15 @@ class Dashboard extends React.Component {
 
 }
 
+var routes = (
+    <Router history={browserHistory}>
+        <Route path="/" component={Login}>
+            <Route path="dashboard" component={Dashboard}></Route>
+            <Route path="logout" component={Login}></Route>
+        </Route>
+    </Router>);
+
 $(document).ready(function() {
-    ReactDOM.render(Dashboard, document.getElementById("app"));
+    ReactDOM.render(routes, document.getElementById("app"));
 });
 
